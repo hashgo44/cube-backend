@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: cube_postgres
+    environment:
+      POSTGRES_USER: cube_user
+      POSTGRES_PASSWORD: cube_password
+      POSTGRES_DB: cube_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cube_user -d cube_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+
