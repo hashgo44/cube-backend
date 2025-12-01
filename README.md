@@ -1,4 +1,4 @@
-# Cube Backend API
+# Cube-Backend API
 
 API simple avec FastAPI et connexion PostgreSQL.
 
