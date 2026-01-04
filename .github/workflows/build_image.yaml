@@ -24,10 +24,26 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Generate image tags
+        id: meta
+        run: |
+          # Tag avec commit SHA court + timestamp (pour Flux)
+          COMMIT_SHA=$(git rev-parse --short HEAD)
+          TIMESTAMP=$(date +%s)
+          VERSION_TAG="main-${COMMIT_SHA}-${TIMESTAMP}"
+          
+          echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
+          echo "Generated tag: ${VERSION_TAG}"
+
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository_owner }}/cube-backend:latest .
+          docker build \
+            -t ghcr.io/${{ github.repository_owner }}/cube-backend:latest \
+            -t ghcr.io/${{ github.repository_owner }}/cube-backend:${{ steps.meta.outputs.version_tag }} \
+            .
 
       - name: Push Docker image
         run: |
+          # Push les deux tags
           docker push ghcr.io/${{ github.repository_owner }}/cube-backend:latest
+          docker push ghcr.io/${{ github.repository_owner }}/cube-backend:${{ steps.meta.outputs.version_tag }}
