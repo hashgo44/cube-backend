@@ -12,7 +12,7 @@ from typing import Optional
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
-    print("🚀 Démarrage de l'application...bonjour")
+    print("🚀 Démarrage de l'application...testromain")
     test_connection()
     # Créer les tables automatiquement
     Base.metadata.create_all(bind=engine)
