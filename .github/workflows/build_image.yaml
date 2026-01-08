@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - development  # ← AJOUTER development
 
 jobs:
   build:
@@ -27,10 +28,16 @@ jobs:
       - name: Generate image tags
         id: meta
         run: |
-          # Tag avec commit SHA court + timestamp (pour Flux)
+          # Détermine le préfixe selon la branche
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            PREFIX="main"
+          else
+            PREFIX="development"
+          fi
+          
           COMMIT_SHA=$(git rev-parse --short HEAD)
           TIMESTAMP=$(date +%s)
-          VERSION_TAG="main-${COMMIT_SHA}-${TIMESTAMP}"
+          VERSION_TAG="${PREFIX}-${COMMIT_SHA}-${TIMESTAMP}"
           
           echo "version_tag=${VERSION_TAG}" >> $GITHUB_OUTPUT
           echo "Generated tag: ${VERSION_TAG}"
@@ -44,6 +51,5 @@ jobs:
 
       - name: Push Docker image
         run: |
-          # Push les deux tags
           docker push ghcr.io/${{ github.repository_owner }}/cube-backend:latest
           docker push ghcr.io/${{ github.repository_owner }}/cube-backend:${{ steps.meta.outputs.version_tag }}
